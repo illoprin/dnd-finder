@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D&D Finder — Поиск заявок</title>
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <!-- Bootstrap 5 JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"
+    defer></script>
+  <!-- D&D Finder CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+ <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="landing.html">D&D Finder</a>
+      <div>
+        <a href="auth.html" class="btn btn-accent me-2">Регистрация</a>
+        <a href="auth.html" class="btn btn-outline-light">Вход</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Контент -->
+  <section class="py-5">
+    <div class="container">
+
+      <!-- Пагинация -->
+      <nav aria-label="Навигация по страницам">
+        <ul class="pagination justify-content-center mb-4">
+          <li class="page-item disabled"><a class="page-link" href="#">Назад</a></li>
+          <li class="page-item active"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#">Вперёд</a></li>
+        </ul>
+      </nav>
+
+      <!-- Карточки заявок -->
+      <div class="row g-4">
+        <!-- Заявка 1 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Кампания в стиле WWII</h5>
+              <p class="card-text">Ищу 3–4 игроков для долгой кампании в сеттинге Второй Мировой. Игры раз в неделю.
+              </p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+        <!-- Заявка 2 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Новички приветствуются</h5>
+              <p class="card-text">Мастер для начинающих ищет игроков. Всё объясню и помогу освоиться.</p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+        <!-- Заявка 3 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Одноразовое приключение</h5>
+              <p class="card-text">Разовое приключение на 4–5 часов. Подходит для тех, кто хочет попробовать D&D.</p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+        <!-- Заявка 4 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Поход в подземелья</h5>
+              <p class="card-text">Нужен один игрок для группы. Старт с 5 уровня. Онлайн-игры по вечерам.</p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+        <!-- Заявка 5 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Кампания Curse of Strahd</h5>
+              <p class="card-text">Готическая история о вампире Строде. Ищу смелых игроков для долгого сюжета.</p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+        <!-- Заявка 6 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Только онлайн</h5>
+              <p class="card-text">Команда ищет мастера. Играем в Roll20/Discord. Уровень 3–4.</p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+        <!-- Заявка 7 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Однодневка в Waterdeep</h5>
+              <p class="card-text">Хотите попробовать D&D? Отличная возможность для новичков!</p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+        <!-- Заявка 8 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Ищу мастера</h5>
+              <p class="card-text">Хочу присоединиться к игре в стиле фентези. Опыт небольшой.</p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+        <!-- Заявка 9 -->
+        <div class="col-md-4">
+          <div class="card h-100 app">
+            <img src="https://via.placeholder.com/400x200" class="card-img-top" alt="Заявка">
+            <div class="card-body">
+              <h5 class="card-title">Кампания для друзей</h5>
+              <p class="card-text">Играем вживую, Самара. Нужно ещё 2 игрока.</p>
+              <a href="app.html" class="btn btn-accent mt-auto">Детальнее</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Футер -->
+  <footer class="py-3">
+    <div class="container text-center">
+      <small>© 2025 D&D Finder. Все права защищены.</small>
+    </div>
+  </footer>
+
+</body>
+
+</html>
