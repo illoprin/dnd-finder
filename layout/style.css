@@ -81,15 +81,31 @@ section {
   color: #ebe3b5;
 }
 
-.form-control {
+.form-control,
+.form-control-file {
   background-color: #2d2321;
   border: 1px solid #906b3e;
   color: #ebe3b5;
 }
 
 .form-control:focus {
+  background-color: #2d2321;
   border-color: #d9972b;
-  box-shadow: 0 0 0 0.2rem rgba(217, 151, 43, 0.25);
+  color: #fff;
+  box-shadow: none;
+}
+
+.img-preview {
+  max-width: 100%;
+  border-radius: 8px;
+  margin-top: 15px;
+  border: 1px solid #906b3e;
+}
+
+.input-group-text {
+  background-color: #453227;
+  border: 1px solid #906b3e;
+  color: #ebe3b5;
 }
 
 .nav-pills .nav-link {
@@ -123,8 +139,18 @@ section {
   background-color: #453227;
   border: none;
   color: #ebe3b5;
-  padding: 10px 15px;
+  padding: 0.7rem 1.3rem;
   border-radius: 8px;
+}
+
+.nav-tabs .nav-link {
+  color: #ebe3b5;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #453227;
+  border-color: #d9972b;
+  color: #d9972b;
 }
 
 .profile-link {
