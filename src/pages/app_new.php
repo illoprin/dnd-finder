@@ -8,9 +8,22 @@ if (!isLoggedIn()) {
 }
 
 $errors = [];
+$can_create_app = false;
+
+// Check user telegram
+try {
+  $stmt = $pdo->prepare("SELECT (telegram_username) FROM users WHERE id = ?");
+  $stmt->execute([$_SESSION['user_id']]);
+  $telegram_username = $stmt->fetch()['telegram_username'];
+} catch (PDOException $e) {
+  $errors[] = "Ошибка базы данных " . $e->getMessage();
+}
+if (empty($telegram_username) || !$telegram_username) {
+  $errors[] = "Вам необходимо указать Telegram Username, чтобы создавать заявки";
+}
 
 // Process form data
-if ($_SERVER['REQUEST_METHOD'] === "POST") {
+if ($_SERVER['REQUEST_METHOD'] === "POST" && empty($errors)) {
   // Get form data
   $title = trim($_POST['title'] ?? '');
   $description = trim($_POST['description'] ?? '');
@@ -39,10 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
       // Check file size and format
       $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-      array_map(function($elem) {
+      array_map(function ($elem) {
         $errors[] = $elem;
       }, check_file($file, $allowed_types, 3 * 1024 * 1024));
-      
+
       // Create uploads dir
       if (empty($errors)) {
         $upload_dir = "../uploads/";
@@ -123,8 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             id="title"
             name="title"
             minlength="5"
-            required
-          >
+            required>
         </div>
 
         <div class="mb-3">
@@ -136,8 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             placeholder="Опиши суть своей заявки..."
             minlength="10"
             name="description"
-            required
-          ></textarea>
+            required></textarea>
         </div>
 
         <div class="mb-3">
@@ -148,8 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
             id="image"
             accept="image/*"
             name="image"
-            required
-          >
+            required>
           <img id="preview" class="img-preview" alt="Предпросмотр изображения">
         </div>
 

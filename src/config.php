@@ -65,6 +65,13 @@ function isLoggedIn() {
   return isset($_SESSION["user_id"]);
 }
 
+function isApplicationFavorite($id, $user_id) {
+  global $pdo;
+  $stmt = $pdo->prepare("SELECT 1 FROM liked_apps WHERE user_id = ? AND application_id = ?");
+  $stmt->execute([$user_id, $id]);
+  return $stmt->fetch() !== false;
+}
+
 $app_types = [
   'master' => '👑 Мастер ищет игроков',
   'player' => '🎭 Игрок ищет мастера',

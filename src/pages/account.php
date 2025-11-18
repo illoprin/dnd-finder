@@ -8,21 +8,30 @@ if (!isLoggedIn()) {
 }
 
 $error = "";
+$user_id = $_SESSION['user_id'];
 
 try {
   // Get user data from database
-  $user_id = $_SESSION['user_id'];
   $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
   $stmt->execute([$user_id]);
   $user_entry = $stmt->fetch();
-  
+
   // Get user's app entries from database
   $stmt = $pdo->prepare("SELECT * FROM applications WHERE user_id = ?");
   $stmt->execute([$user_id]);
   $user_apps = $stmt->fetchAll();
 
-  // TODO Get liked apps from database
-  $favorites = array();
+  // Get liked apps from database
+  $stmt = $pdo->prepare("
+    SELECT a.*, u.nickname as author_nickname
+    FROM applications a 
+    INNER JOIN liked_apps la ON a.id = la.application_id 
+    INNER JOIN users u ON a.user_id = u.id 
+    WHERE la.user_id = ?
+    ORDER BY la.id DESC
+  ");
+  $stmt->execute([$user_id]);
+  $favorites = $stmt->fetchAll();
 } catch (PDOException $e) {
   $error = "Ошибка базы данных " . $e->getMessage();
 }
@@ -49,7 +58,7 @@ try {
 
 
     <!-- Error Block -->
-    <? if(!empty($error)): ?>
+    <? if (!empty($error)): ?>
       <div class="alert alert-danger">
         <?= $error ?>
       </div>
@@ -156,8 +165,7 @@ try {
               type="text"
               class="form-control"
               value="<?= $user_entry['login'] ?>"
-              name="login"
-            />
+              name="login" />
           </div>
           <div class="mb-3">
             <label class="form-label" for="securityCurrentPassword">Текущий пароль</label>
@@ -183,65 +191,72 @@ try {
       <!-- My apps -->
       <div class="tab-pane fade" id="apps" role="tabpanel">
         <? if (!empty($user_apps)): ?>
-        <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
+          <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
 
-          <? foreach ($user_apps as $app): ?>
-            <div class="col">
-              <div class="card h-100">
-                <img
-                  src="<?= $app['image_url'] ?>"
-                  class="card-img-top"
-                  alt="Заявка"
-                  style="height: 200px; object-fit: cover;"
-                >
-                <div class="card-body">
-                  <h5 class="card-title"><?= htmlspecialchars($app['title']) ?></h5>
-                  <p class="card-text"><?= htmlspecialchars(mb_strimwidth($app['description'], 0, 150, "...")) ?></p>
-                </div>
-                <div class="card-footer d-flex justify-content-between p-3">
-                  <a href="/pages/app_edit.php?id=<?= $app['id'] ?>" class="btn btn-accent">Редактировать</a>
-                  <a href="/actions/app_delete.php?id=<?= $app['id'] ?>" class="btn btn-outline-danger">Удалить</a>
+            <? foreach ($user_apps as $app): ?>
+              <div class="col">
+                <div class="card h-100">
+                  <img
+                    src="<?= $app['image_url'] ?>"
+                    class="card-img-top"
+                    alt="Заявка"
+                    style="height: 200px; object-fit: cover;">
+                  <div class="card-body">
+                    <h5 class="card-title"><?= htmlspecialchars($app['title']) ?></h5>
+                    <p class="card-text"><?= htmlspecialchars(mb_strimwidth($app['description'], 0, 150, "...")) ?></p>
+                  </div>
+                  <div class="card-footer d-flex justify-content-between p-3">
+                    <a href="/pages/app_edit.php?id=<?= $app['id'] ?>" class="btn btn-accent">Редактировать</a>
+                    <a href="/actions/app_delete.php?id=<?= $app['id'] ?>" class="btn btn-outline-danger">Удалить</a>
+                  </div>
                 </div>
               </div>
-            </div>
-          <? endforeach; ?>
+            <? endforeach; ?>
 
-        </div>
+          </div>
         <? else: ?>
-            <h1 class="fw-normal">У вас нет активных заявок, <a class="profile-link" href="/pages/app_new.php">создайте</a></h1>
+          <h1 class="fw-normal">У вас нет активных заявок, <a class="profile-link" href="/pages/app_new.php">создайте</a></h1>
         <? endif; ?>
       </div>
 
       <!-- Favorites -->
       <div class="tab-pane fade" id="favorites" role="tabpanel">
 
-        <? if (!empty($favorites)): ?>
+        <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
+          <? if (!empty($favorites)): ?>
+            <? foreach ($favorites as $app): ?>
+              <!-- Favorite app card -->
+              <div class="col">
+                <div class="card h-100">
 
-          <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
-            <!-- Favorite app card -->
-            <div class="col">
-              <div class="card h-100">
-                <img src="https://via.placeholder.com/400x250" class="card-img-top" alt="Заявка">
-                <div class="card-body">
-                  <h5 class="card-title">Ледяной Шторм</h5>
-                  <p class="card-text">Ищу мастера для короткой кампании Icewind Dale...</p>
-                </div>
-                <div class="card-footer p-3">
-                  <a href="app.html" class="btn btn-accent">Перейти к заявке</a>
+                  <img
+                    src="<?= $app['image_url'] ?>"
+                    class="card-img-top"
+                    alt="Заявка"
+                    style="height: 200px; object-fit: cover;">
+                  <div class="card-body">
+                    <h5 class="card-title"><?= htmlspecialchars($app['title']) ?></h5>
+                    <p class="card-text"><?= htmlspecialchars(mb_strimwidth($app['description'], 0, 150, "...")) ?></p>
+                  </div>
+                  <div class="card-footer d-flex justify-content-between p-3">
+                    <a href="/pages/app.php?id=<?= $app['id'] ?>" class="btn btn-accent">Перейти к заявке</a>
+                    <a href="/actions/favorite_handler.php?id=<?= $app['id'] ?>&is_favorite=1&hash=favorites" class="btn btn-outline-danger">Удалить из избранных</a>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            <? endforeach; ?>
+        </div>
 
-        <? else: ?>
-          <h1 class="fw-normal">Нет избранных заявок</h1>
-        <? endif; ?>
+
+      <? else: ?>
+        <h1 class="fw-normal">Нет избранных заявок</h1>
+      <? endif; ?>
       </div>
 
 
     </div>
   </div>
-  
+
   <? require_once "../components/footer.php" ?>
 
   <script src="/js/account.js"></script>

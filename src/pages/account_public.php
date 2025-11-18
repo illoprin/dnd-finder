@@ -16,7 +16,7 @@ if (empty($id)) {
 }
 
 $id = (int)$id;
-$is_owner = $id == $_SESSION['user_id'];
+$is_owner = isLoggedIn() && $id == $_SESSION['user_id'];
 
 $error = "";
 try {
@@ -52,7 +52,7 @@ try {
 
   <!-- Contents -->
   <div class="container my-5">
-    
+
     <!-- Error Block -->
     <? if(!empty($error)): ?>
       <div class="alert alert-danger">
