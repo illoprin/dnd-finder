@@ -4,8 +4,8 @@ require_once "../config.php";
 
 // Check auth
 if (!isLoggedIn()) {
-    header('Location: /pages/login.php');
-    exit();
+  header('Location: /pages/login.php');
+  exit();
 }
 
 // Получаем данные из POST
@@ -19,113 +19,87 @@ $errors = [];
 
 // Проверка никнейма
 if (empty($nickname)) {
-    $errors[] = 'Никнейм не может быть пустым';
+  $errors[] = 'Никнейм не может быть пустым';
 } elseif (strlen($nickname) < 5) {
-    $errors[] = 'Никнейм должен содержать не менее 5 символов';
+  $errors[] = 'Никнейм должен содержать не менее 5 символов';
 } elseif (preg_match('/[\/<>]/', $nickname)) {
-    $errors[] = 'Никнейм содержит запрещенные символы: /, <, >';
+  $errors[] = 'Никнейм содержит запрещенные символы: /, <, >';
 }
 
 // Проверка email
 if (empty($email)) {
-    $errors[] = 'Email не может быть пустым';
+  $errors[] = 'Email не может быть пустым';
 } elseif (strlen($email) < 5) {
-    $errors[] = 'Email должен содержать не менее 5 символов';
+  $errors[] = 'Email должен содержать не менее 5 символов';
 } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $errors[] = 'Некорректный формат email';
+  $errors[] = 'Некорректный формат email';
 } elseif (preg_match('/[\/<>]/', $email)) {
-    $errors[] = 'Email содержит запрещенные символы: /, <, >';
+  $errors[] = 'Email содержит запрещенные символы: /, <, >';
 }
 
 // Проверка telegram username
 if (!empty($telegram_username) && preg_match('/[\/<>]/', $telegram_username)) {
-    $errors[] = 'Telegram username содержит запрещенные символы: /, <, >';
+  $errors[] = 'Telegram username содержит запрещенные символы: /, <, >';
 }
 
 // Проверка описания
 if (!empty($description) && preg_match('/[\/<>]/', $description)) {
-    $errors[] = 'Описание содержит запрещенные символы: /, <, >';
+  $errors[] = 'Описание содержит запрещенные символы: /, <, >';
 }
 
 // Если есть ошибки - показываем их
 if (!empty($errors)) {
-    showErrorPage($errors);
-    exit();
+  showErrorPage($errors);
+  exit();
 }
 
 // Проверяем уникальность email (кроме текущего пользователя)
 $user_id = $_SESSION['user_id'];
 try {
-    $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
-    $stmt->execute([$email, $user_id]);
-    if ($stmt->fetch()) {
-        showErrorPage(['Этот email уже используется другим пользователем']);
-        exit();
-    }
-} catch (PDOException $e) {
-    showErrorPage(['Ошибка базы данных при проверке email']);
+  $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
+  $stmt->execute([$email, $user_id]);
+  if ($stmt->fetch()) {
+    showErrorPage(['Этот email уже используется другим пользователем']);
     exit();
+  }
+} catch (PDOException $e) {
+  showErrorPage(['Ошибка базы данных при проверке email']);
+  exit();
 }
 
 // Обновляем данные пользователя в базе данных
 try {
-    // Подготавливаем запрос
-    $sql = "UPDATE users SET nickname = ?, email = ?, telegram_username = ?, description = ? WHERE id = ?";
-    $stmt = $pdo->prepare($sql);
-    
-    // Выполняем запрос
-    $success = $stmt->execute([
-        $nickname,
-        $email,
-        empty($telegram_username) ? null : $telegram_username,
-        empty($description) ? null : $description,
-        $user_id
-    ]);
-    
-    if ($success) {
-        $_SESSION['user_nickname'] = $nickname;
+  // Подготавливаем запрос
+  $sql = "UPDATE users SET nickname = ?, email = ?, telegram_username = ?, description = ? WHERE id = ?";
+  $stmt = $pdo->prepare($sql);
 
-        // Перенаправляем обратно в личный кабинет
-        header('Location: /pages/account.php#edit');
-        exit();
-    } else {
-        showErrorPage(['Ошибка при обновлении данных в базе данных']);
-    }
-    
+  // Выполняем запрос
+  $success = $stmt->execute([
+    $nickname,
+    $email,
+    empty($telegram_username) ? null : $telegram_username,
+    empty($description) ? null : $description,
+    $user_id
+  ]);
+
+  if ($success) {
+    $_SESSION['user_nickname'] = $nickname;
+
+    // Перенаправляем обратно в личный кабинет
+    header('Location: /pages/account.php#edit');
+    exit();
+  } else {
+    showErrorPage(['Ошибка при обновлении данных в базе данных']);
+  }
 } catch (PDOException $e) {
-    showErrorPage(['Ошибка базы данных: ' . $e->getMessage()]);
+  showErrorPage(['Ошибка базы данных: ' . $e->getMessage()]);
 }
 
 
 // Show errors page
-// WARN Code Duplication
-function showErrorPage($errors)
-{
-    ?>
-    <!DOCTYPE html>
-    <html lang="ru">
-
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <? require_once "../components/head.php" ?>
-        <title>D&D Finder — Ошибка редактирования профиля</title>
-    </head>
-
-    <body class="justify-content-center align-items-center flex-column">
-        <div class="container text-center">
-        <p class="fw-bold fs-1 mb-3">
-            Есть ошибки ⚠️
-        </p>
-        <? foreach ($errors as $error): ?>
-        <div class="alert alert-danger" role="alert">
-            <? echo $error; ?>
-        </div>
-        <? endforeach; ?>
-        <a href="/pages/account.php" class="btn btn-accent">В личный кабинет</a>
-        </div>
-    </body>
-
-    </html>
-    <?
+function showErrorPage($errors) {
+  $title = "Ошибка редактирования профиля";
+  $link_href = "/pages/account.php";
+  $link_title  = "В личный кабинет";
+  require_once "../pages/errors.php";
 }

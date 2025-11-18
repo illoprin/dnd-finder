@@ -12,7 +12,7 @@
         </a>
 
         <span>
-          Привет, <a href="/pages/account.php" class="profile-link"><? echo $_SESSION['user_nickname'] ?></a>
+          Привет, <a href="/pages/account.php" class="profile-link" title="В личный кабинет"><? echo $_SESSION['user_nickname'] ?></a>
         </span>
 
       <? else: ?>

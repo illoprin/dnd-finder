@@ -5,10 +5,8 @@ body {
   background-color: #2d2321;
   color: #ebe3b5;
   min-height: 100vh;
-  /* WARN: shitcode */
   display: flex;
   flex-flow: column nowrap;
-  /* WARN: shitcode */
 }
 
 .navbar,

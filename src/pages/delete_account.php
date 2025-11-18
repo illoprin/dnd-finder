@@ -8,7 +8,7 @@ header('Content-Type: text/html; charset=utf-8');
 
 // Проверяем, авторизован ли пользователь
 if (!isLoggedIn()) {
-  header('Location: ../index.html#login');
+  header('Location: /pages/auth.php#login');
   exit;
 }
 
@@ -101,7 +101,7 @@ function showDeleteForm($errors = [])
     </style>
   </head>
 
-  <body>
+  <body class="justify-content-center">
     <div class="container">
       <div class="card">
         <div class="card-body">

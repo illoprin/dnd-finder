@@ -1,12 +1,18 @@
 <?
 session_start();
 require_once "../config.php";
+
 if (!isset($_GET['id'])) {
   header("Location: /pages/search.php");
   exit;
 }
 
-$app_id = (int)$_GET['id'];
+$app_id = $_GET['id'] ?? '';
+
+if (empty($app_id)) {
+  header("Location: /pages/search.php");
+  exit;
+}
 
 $stmt = $pdo->prepare(
   "SELECT
@@ -50,9 +56,35 @@ $app_entry = $stmt->fetch();
       <div class="col-md-6">
         <div class="d-flex justify-content-between mb-3">
           <h2><?= $app_entry['title'] ?></h2>
-          <button class="btn btn-outline-light">
-            <i class="bi bi-bookmark-plus"></i>
-          </button>
+
+          <? if (isLoggedIn()) : ?>
+            <!-- Favorites button -->
+            <? if ($_SESSION['user_id'] != $app_entry['user_id']): ?>
+              <div>
+                <button
+                  class="btn btn-outline-light"
+                  title="Добавить в избранное"
+                >
+                  <i class="bi bi-bookmark-plus"></i>
+                </button>
+              </div>
+            <? endif; ?>
+
+            <!-- Edit button -->
+            <? if ($_SESSION['user_id'] == $app_entry['user_id']): ?>
+              <div>
+                <a
+                  class="btn btn-outline-light"
+                  href="/pages/app_edit.php?id=<?= $app_entry['id'] ?>"
+                  title="Редактировать"
+                >
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+              </div>
+            <? endif; ?>
+
+          <? endif; ?>
+
         </div>
 
         <div class="accent-block mb-3">

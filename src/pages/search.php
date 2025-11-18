@@ -79,7 +79,7 @@ $applications = $stmt->fetchAll();
                 <h5 class="card-title fw-bold"><?= htmlspecialchars($app['title']) ?></h5>
                 <p class="card-text flex-grow-1"><?= htmlspecialchars(mb_strimwidth($app['description'], 0, 150, "...")) ?></p>
                 <span class="d-block profile-link">
-                  <?= $app['type'] == 'master' ? '👑 Мастер ищет игроков' : '🎭 Игрок ищет мастера' ?>
+                  <?= $app_types[$app['type']] ?>
                 </span>
                 <a href="/pages/app.php?id=<?= $app['id'] ?>" class="btn btn-accent mt-2">Детальнее</a>
               </div>

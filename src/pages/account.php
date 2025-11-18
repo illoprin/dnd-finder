@@ -7,18 +7,25 @@ if (!isLoggedIn()) {
   exit();
 }
 
-// Get user data from database
-$user_id = $_SESSION['user_id'];
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$user_id]);
-$user_entry = $stmt->fetch();
+$error = "";
 
-// Get user's app entries from database
-$stmt = $pdo->prepare("SELECT * FROM applications WHERE user_id = ?");
-$stmt->execute([$user_id]);
-$user_apps = $stmt->fetchAll();
+try {
+  // Get user data from database
+  $user_id = $_SESSION['user_id'];
+  $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+  $stmt->execute([$user_id]);
+  $user_entry = $stmt->fetch();
+  
+  // Get user's app entries from database
+  $stmt = $pdo->prepare("SELECT * FROM applications WHERE user_id = ?");
+  $stmt->execute([$user_id]);
+  $user_apps = $stmt->fetchAll();
 
-// TODO Get liked apps from database
+  // TODO Get liked apps from database
+  $favorites = array();
+} catch (PDOException $e) {
+  $error = "Ошибка базы данных " . $e->getMessage();
+}
 
 ?>
 
@@ -40,20 +47,28 @@ $user_apps = $stmt->fetchAll();
   <!-- Content -->
   <div class="container my-5">
 
+
+    <!-- Error Block -->
+    <? if(!empty($error)): ?>
+      <div class="alert alert-danger">
+        <?= $error ?>
+      </div>
+    <? endif; ?>
+
     <!-- Upper block: Account Data -->
     <div class="mb-4 p-3 rounded card">
       <div class="row g-3">
         <div class="col-md-6">
           <h4 class="mb-1 fw-bold">
-            <? echo $user_entry['nickname'] ?>
+            <?= $user_entry['nickname'] ?>
           </h4>
           <p class="mb-0">
             Email:
-            <span class="fw-bold"><? echo $user_entry['email'] ?></span>
+            <span class="fw-bold"><?= $user_entry['email'] ?></span>
           </p>
           <p class="mb-0">
             Зарегистрирован:
-            <span class="fw-bold"><? echo $user_entry['created_at'] ?></span>
+            <span class="fw-bold"><?= $user_entry['created_at'] ?></span>
           </p>
         </div>
         <div class="col-md-6 text-end">
@@ -99,7 +114,7 @@ $user_apps = $stmt->fetchAll();
             <input
               type="text"
               class="form-control"
-              value="<? echo $user_entry['nickname'] ?>"
+              value="<?= $user_entry['nickname'] ?>"
               name="nickname">
           </div>
           <div class="mb-3">
@@ -107,7 +122,7 @@ $user_apps = $stmt->fetchAll();
             <input
               type="email"
               class="form-control"
-              value="<? echo $user_entry['email'] ?>"
+              value="<?= $user_entry['email'] ?>"
               name="email">
           </div>
           <div class="mb-3">
@@ -117,7 +132,7 @@ $user_apps = $stmt->fetchAll();
               <input
                 type="text"
                 class="form-control"
-                value="<? echo $user_entry['telegram_username'] ?>"
+                value="<?= $user_entry['telegram_username'] ?>"
                 aria-describedby="telegram-username"
                 name="telegram_username">
             </div>
@@ -127,7 +142,7 @@ $user_apps = $stmt->fetchAll();
             <textarea
               class="form-control"
               name="description"
-              name="description"><? echo $user_entry['description'] ?></textarea>
+              name="description"><?= $user_entry['description'] ?></textarea>
           </div>
           <button type="submit" class="btn btn-accent">Сохранить</button>
         </form>
@@ -140,7 +155,9 @@ $user_apps = $stmt->fetchAll();
             <input
               type="text"
               class="form-control"
-              value="<? echo $user_entry['login'] ?>">
+              value="<?= $user_entry['login'] ?>"
+              name="login"
+            />
           </div>
           <div class="mb-3">
             <label class="form-label" for="securityCurrentPassword">Текущий пароль</label>
@@ -165,30 +182,42 @@ $user_apps = $stmt->fetchAll();
       </div>
       <!-- My apps -->
       <div class="tab-pane fade" id="apps" role="tabpanel">
+        <? if (!empty($user_apps)): ?>
         <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
 
           <? foreach ($user_apps as $app): ?>
             <div class="col">
               <div class="card h-100">
-                <img src="<? echo $app['image_url'] ?>" class="card-img-top" alt="Заявка">
+                <img
+                  src="<?= $app['image_url'] ?>"
+                  class="card-img-top"
+                  alt="Заявка"
+                  style="height: 200px; object-fit: cover;"
+                >
                 <div class="card-body">
-                  <h5 class="card-title"><? echo $app['title'] ?></h5>
-                  <p class="card-text"><? echo $app['description'] ?></p>
+                  <h5 class="card-title"><?= htmlspecialchars($app['title']) ?></h5>
+                  <p class="card-text"><?= htmlspecialchars(mb_strimwidth($app['description'], 0, 150, "...")) ?></p>
                 </div>
                 <div class="card-footer d-flex justify-content-between p-3">
-                  <a href="/pages/app_edit.php?id=<? echo $app['id'] ?>" class="btn btn-accent">Редактировать</a>
-                  <a href="/actions/app_delete.php?id=<? echo $app['id'] ?>" class="btn btn-outline-danger">Удалить</a>
+                  <a href="/pages/app_edit.php?id=<?= $app['id'] ?>" class="btn btn-accent">Редактировать</a>
+                  <a href="/actions/app_delete.php?id=<?= $app['id'] ?>" class="btn btn-outline-danger">Удалить</a>
                 </div>
               </div>
             </div>
           <? endforeach; ?>
 
         </div>
+        <? else: ?>
+            <h1 class="fw-normal">У вас нет активных заявок, <a class="profile-link" href="/pages/app_new.php">создайте</a></h1>
+        <? endif; ?>
+      </div>
 
-        <!-- Favorites -->
-        <div class="tab-pane fade" id="favorites" role="tabpanel">
+      <!-- Favorites -->
+      <div class="tab-pane fade" id="favorites" role="tabpanel">
+
+        <? if (!empty($favorites)): ?>
+
           <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
-
             <!-- Favorite app card -->
             <div class="col">
               <div class="card h-100">
@@ -202,25 +231,13 @@ $user_apps = $stmt->fetchAll();
                 </div>
               </div>
             </div>
-
-            <!-- Favorite app card -->
-            <div class="col">
-              <div class="card h-100">
-                <img src="https://via.placeholder.com/400x250" class="card-img-top" alt="Заявка">
-                <div class="card-body">
-                  <h5 class="card-title">Приключения в Ватердипе</h5>
-                  <p class="card-text">Ищу игроков для кампании «Dragon Heist»...</p>
-                </div>
-                <div class="card-footer p-3">
-                  <a href="app.html" class="btn btn-accent">Перейти к заявке</a>
-                </div>
-              </div>
-            </div>
-
           </div>
-        </div>
 
+        <? else: ?>
+          <h1 class="fw-normal">Нет избранных заявок</h1>
+        <? endif; ?>
       </div>
+
 
     </div>
   </div>

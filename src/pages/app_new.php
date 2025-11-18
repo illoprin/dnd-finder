@@ -9,86 +9,74 @@ if (!isLoggedIn()) {
 
 $errors = [];
 
+// Process form data
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-  // Получаем данные из формы
+  // Get form data
   $title = trim($_POST['title'] ?? '');
   $description = trim($_POST['description'] ?? '');
   $type = $_POST['type'] ?? '';
   $image_url = null;
 
-  // Валидация данных
-  if (empty($title) || empty($description) || empty($type)) {
-    $errors[] = "Все поля обязательны для заполнения!";
-  } elseif (strlen($title) > 200) {
-    $errors[] = "Название заявки слишком длинное (максимум 255 символов)";
-  } else {
+  // Validate title
+  if (preg_match('/[\/<>]/', $title)) {
+    $errors[] = "Заголовок содержит запрещённые символы: /, <, >";
+  }
 
-    // WARN Code duplication
-    // Обработка загрузки изображения
+  // Validate description
+  if (preg_match('/[\/<>]/', $description)) {
+    $errors[] = "Описание содержит запрещённые символы: /, <, >";
+  }
+
+  // Validate type
+  if (empty($type)) {
+    $errors[] = "Тип заявки должен быть заполнен";
+  }
+
+  // Load image
+  if (empty($errors)) {
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
       $file = $_FILES['image'];
 
-
-      // Проверка типа файла
+      // Check file size and format
       $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-      $file_type = mime_content_type($file['tmp_name']);
-
-      if (!in_array($file_type, $allowed_types)) {
-        $errors[] = "Недопустимый формат изображения. Разрешены: JPEG, JPG, PNG, WEBP, GIF";
-      }
-      // Проверка размера файла (3MB)
-      elseif ($file['size'] > 3 * 1024 * 1024) {
-        $errors[] = "Размер изображения не должен превышать 3MB";
-      } else {
-        // Создаем папку uploads если ее нет (с рекурсивным созданием)
+      array_map(function($elem) {
+        $errors[] = $elem;
+      }, check_file($file, $allowed_types, 3 * 1024 * 1024));
+      
+      // Create uploads dir
+      if (empty($errors)) {
         $upload_dir = "../uploads/";
-        if (!is_dir($upload_dir)) {
-          if (!mkdir($upload_dir, 0755, true)) {
-            $errors[] = "Не удалось создать папку для загрузки файлов";
-          }
+        if (!create_or_check_directory($upload_dir)) {
+          $errors[] = "Не удаётся создать папку для загрузки или она недоступна для записи";
         }
+      }
 
-        // Проверяем, доступна ли папка для записи
-        if (empty($error) && !is_writable($upload_dir)) {
-          $errors[] = "Папка для загрузки недоступна для записи";
-        }
-
-        if (empty($errors)) {
-          // Генерируем уникальное имя файла
-          $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
-          $filename = uniqid() . '_' . time() . '.' . $file_extension;
-          $file_path = $upload_dir . $filename;
-
-          // Пытаемся загрузить файл
-          if (move_uploaded_file($file['tmp_name'], $file_path)) {
-            $image_url = "/uploads/" . $filename;
-          } else {
-            $errors[] = "Ошибка при загрузке изображения. Проверьте права доступа к папке uploads";
-            // Дополнительная диагностика
-            error_log("Upload error: cannot move file to " . $file_path);
-            error_log("Upload dir permissions: " . substr(sprintf('%o', fileperms($upload_dir)), -4));
-          }
+      // Upload file
+      if (empty($errors)) {
+        $image_url = upload_file($file, $upload_dir);
+        if (!$image_url) {
+          $errors[] = "Ошибка при загрузке изображения";
         }
       }
     } elseif ($_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
       $errors[] = "Ошибка при загрузке файла: " . $_FILES['image']['error'];
     }
+  }
 
-    // Если нет ошибок - сохраняем заявку в БД
-    if (empty($errors)) {
-      try {
-        $stmt = $pdo->prepare("INSERT INTO applications (user_id, type, title, description, image_url) VALUES (?, ?, ?, ?, ?)");
-        $stmt->execute([$_SESSION['user_id'], $type, $title, $description, $image_url]);
+  // Add entry to db
+  if (empty($errors)) {
+    try {
+      $stmt = $pdo->prepare("INSERT INTO applications (user_id, type, title, description, image_url) VALUES (?, ?, ?, ?, ?)");
+      $stmt->execute([$_SESSION['user_id'], $type, $title, $description, $image_url]);
 
-        header("Location: /pages/account.php#apps");
-        exit;
-      } catch (PDOException $e) {
-        $errors[] = "Ошибка при сохранении заявки: " . $e->getMessage();
+      header("Location: /pages/account.php#apps");
+      exit;
+    } catch (PDOException $e) {
+      $errors[] = "Ошибка при сохранении заявки: " . $e->getMessage();
 
-        // Если была загружена картинка, но произошла ошибка БД - удаляем ее
-        if ($image_url && file_exists(".." . $image_url)) {
-          unlink(".." . $image_url);
-        }
+      // If image loaded and entry added with errors - delete image
+      if ($image_url && file_exists(".." . $image_url)) {
+        unlink(".." . $image_url);
       }
     }
   }
@@ -120,43 +108,63 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     <div class="card p-4 shadow-lg">
       <h3 class="mb-4 text-center">Новая заявка</h3>
 
+      <? foreach ($errors as $error): ?>
+        <div class="alert alert-danger m-0 mt-3" role="alert">
+          <? echo $error; ?>
+        </div>
+      <? endforeach; ?>
+
       <form method="POST" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="title" class="form-label">Название заявки</label>
-          <input type="text" class="form-control" id="title" name="title" required>
+          <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            minlength="5"
+            required
+          >
         </div>
 
         <div class="mb-3">
           <label for="description" class="form-label">Описание заявки</label>
-          <textarea class="form-control" id="description" rows="6" placeholder="Опиши суть своей заявки..." name="description" required></textarea>
+          <textarea
+            class="form-control"
+            id="description"
+            rows="6"
+            placeholder="Опиши суть своей заявки..."
+            minlength="10"
+            name="description"
+            required
+          ></textarea>
         </div>
 
         <div class="mb-3">
           <label for="image" class="form-label">Изображение заявки</label>
-          <input type="file" class="form-control" id="image" accept="image/*" name="image" required>
+          <input
+            type="file"
+            class="form-control"
+            id="image"
+            accept="image/*"
+            name="image"
+            required
+          >
           <img id="preview" class="img-preview" alt="Предпросмотр изображения">
         </div>
-
 
         <div class="mb-3">
           <label for="image" class="form-label" for="type">Тип заявки</label>
           <select class="form-select" name="type" id="type">
-            <option value="master">Я мастер, ищу игроков</option>
-            <option value="player" default>Я игрок, ищу мастера</option>
+            <option value="master"><?= $app_types['master'] ?></option>
+            <option value="player" default><?= $app_types['player'] ?></option>
           </select>
         </div>
-
 
         <div class="text-center mt-3">
           <button type="submit" class="btn btn-accent px-4">Сохранить изменения</button>
         </div>
 
-
-        <? foreach ($errors as $error): ?>
-          <div class="alert alert-danger m-0 mt-3" role="alert">
-            <? echo $error; ?>
-          </div>
-        <? endforeach; ?>
       </form>
     </div>
   </div>
@@ -164,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
   <? require_once "../components/footer.php" ?>
 
   <script>
-    // Превью изображения при загрузке
+    // Loaded image preview
     const input = document.getElementById('image');
     const preview = document.getElementById('preview');
 

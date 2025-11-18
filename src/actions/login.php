@@ -60,34 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   exit;
 }
 
-function showErrorPage($errors)
-{
-  ?>
-    <!DOCTYPE html>
-    <html lang="ru">
-
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <? require_once "../components/head.php" ?>
-      <title>D&D Finder — Ошибка входа</title>
-    </head>
-
-    <body class="justify-content-center align-items-center flex-column">
-      <div class="container text-center">
-        <p class="fw-bold fs-1 mb-3">
-          Есть ошибки ⚠️
-        </p>
-        <? foreach ($errors as $error): ?>
-        <div class="alert alert-danger" role="alert">
-          <? echo $error; ?>
-        </div>
-        <? endforeach; ?>
-        <a href="/pages/auth.php#login" class="btn btn-accent">Повторить вход</a>
-      </div>
-    </body>
-
-    </html>
-  <?
+function showErrorPage($errors) {
+  $title = "Ошибка входа";
+  $link_href = "/pages/auth.php#login";
+  $link_title = "Повторить вход";
+  require_once "../pages/errors.php";
 }
 ?>
