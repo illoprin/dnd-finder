@@ -42,8 +42,6 @@ try {
 <html lang="ru">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D&D Finder — Личный кабинет</title>
 
   <? require_once "../components/head.php" ?>
@@ -102,7 +100,7 @@ try {
         </button>
       </li>
       <li class="nav-item">
-        <button class="nav-link" id="requests-tab" data-bs-toggle="tab" data-bs-target="#apps" type="button" role="tab">
+        <button class="nav-link" id="apps-tab" data-bs-toggle="tab" data-bs-target="#apps" type="button" role="tab">
           Мои заявки
         </button>
       </li>
@@ -153,6 +151,9 @@ try {
               name="description"
               name="description"><?= $user_entry['description'] ?></textarea>
           </div>
+          <div class="alert alert-warning d-none" id="editFormAlert">
+            Форма изменена, сохраните изменения
+          </div>
           <button type="submit" class="btn btn-accent">Сохранить</button>
         </form>
       </div>
@@ -184,6 +185,9 @@ try {
               id="securityNewPassword"
               name="new_password"
               placeholder="Введите новый пароль">
+          </div>
+          <div class="alert alert-warning d-none" id="securityFormAlert">
+            Форма изменена, сохраните изменения
           </div>
           <button type="submit" class="btn btn-accent">Сохранить</button>
         </form>
@@ -221,14 +225,12 @@ try {
 
       <!-- Favorites -->
       <div class="tab-pane fade" id="favorites" role="tabpanel">
-
-        <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
-          <? if (!empty($favorites)): ?>
+        <? if (!empty($favorites)): ?>
+          <div class="row row-cols-1 row-cols-md-3 g-4 mt-4">
             <? foreach ($favorites as $app): ?>
               <!-- Favorite app card -->
               <div class="col">
                 <div class="card h-100">
-
                   <img
                     src="<?= $app['image_url'] ?>"
                     class="card-img-top"
@@ -245,20 +247,19 @@ try {
                 </div>
               </div>
             <? endforeach; ?>
-        </div>
-
-
-      <? else: ?>
-        <h1 class="fw-normal">Нет избранных заявок</h1>
-      <? endif; ?>
+          </div>
+        <? else: ?>
+          <h1 class="fw-normal">Нет избранных заявок</h1>
+        <? endif; ?>
       </div>
-
 
     </div>
   </div>
 
   <? require_once "../components/footer.php" ?>
 
+  <script src="/js/tabsManager.js"></script>
+  <script src="/js/validation.js"></script>
   <script src="/js/account.js"></script>
 </body>
 

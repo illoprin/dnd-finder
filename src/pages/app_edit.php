@@ -129,8 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         }
         $update_values[] = $id;
 
-
-
         // Check nothing to update case
         if (!empty($update_params)) {
           $stmt = $pdo->prepare(
@@ -138,7 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
           );
           $stmt->execute($update_values);
         }
-
 
         header("Location: /pages/app_edit.php?id=$id");
         exit;
@@ -161,12 +158,8 @@ $error ? array_push($errors, $error) : "";
 <html lang="ru">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D&D Finder — Редактирование заявки</title>
-
   <? require_once "../components/head.php" ?>
-
 </head>
 
 <body>

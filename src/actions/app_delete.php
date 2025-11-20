@@ -2,13 +2,13 @@
 session_start();
 require_once "../config.php";
 
-// check logged in
+// Check logged in
 if (!isLoggedIn()) {
   header("Location: /pages/auth.php#login");
   exit();
 }
 
-// check id
+// Check id
 if (!isset($_GET['id']) || empty($_GET['id'])) {
   header("Location: /");
   exit;
@@ -18,22 +18,23 @@ $app_id = (int)$_GET['id'];
 $user_id = $_SESSION['user_id'];
 
 try {
-  // check this entry in db
+  // Check this entry in db
   $stmt = $pdo->prepare("SELECT user_id, image_url FROM applications WHERE id = ?");
   $stmt->execute([$app_id]);
   $app_entry = $stmt->fetch();
 
-  // check ownership
+  // Check ownership
   if ($app_entry['user_id'] !== $user_id) {
     header("Location: /");
     exit;
   }
   
-  // delete image
+  // Delete image
   if (file_exists(".." . $app_entry['image_url'])) {
     unlink(".." . $app_entry['image_url']);
   }
-  
+
+  // Delete entry
   $stmt = $pdo->prepare("DELETE FROM applications WHERE id = ?");
   $stmt->execute([$app_id]);
 } catch (PDOException $e) {

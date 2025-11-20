@@ -8,16 +8,16 @@ if (!isLoggedIn()) {
   exit();
 }
 
-// Получаем данные из POST
+// Get POST data
 $nickname = trim($_POST['nickname'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $telegram_username = trim($_POST['telegram_username'] ?? '');
 $description = trim($_POST['description'] ?? '');
 
-// Валидация данных
+// Validation
 $errors = [];
 
-// Проверка никнейма
+// Check nickname
 if (empty($nickname)) {
   $errors[] = 'Никнейм не может быть пустым';
 } elseif (strlen($nickname) < 5) {
@@ -26,7 +26,7 @@ if (empty($nickname)) {
   $errors[] = 'Никнейм содержит запрещенные символы: /, <, >';
 }
 
-// Проверка email
+// Check email
 if (empty($email)) {
   $errors[] = 'Email не может быть пустым';
 } elseif (strlen($email) < 5) {
@@ -37,23 +37,23 @@ if (empty($email)) {
   $errors[] = 'Email содержит запрещенные символы: /, <, >';
 }
 
-// Проверка telegram username
+// Check telegram
 if (!empty($telegram_username) && preg_match('/[\/<>]/', $telegram_username)) {
   $errors[] = 'Telegram username содержит запрещенные символы: /, <, >';
 }
 
-// Проверка описания
+// Check description
 if (!empty($description) && preg_match('/[\/<>]/', $description)) {
   $errors[] = 'Описание содержит запрещенные символы: /, <, >';
 }
 
-// Если есть ошибки - показываем их
+// Validation end
 if (!empty($errors)) {
   showErrorPage($errors);
   exit();
 }
 
-// Проверяем уникальность email (кроме текущего пользователя)
+// Check email uniqueness
 $user_id = $_SESSION['user_id'];
 try {
   $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ? AND id != ?");
@@ -67,13 +67,13 @@ try {
   exit();
 }
 
-// Обновляем данные пользователя в базе данных
+// Update user data
 try {
-  // Подготавливаем запрос
+  // Prepare query
   $sql = "UPDATE users SET nickname = ?, email = ?, telegram_username = ?, description = ? WHERE id = ?";
   $stmt = $pdo->prepare($sql);
 
-  // Выполняем запрос
+  // Execute query
   $success = $stmt->execute([
     $nickname,
     $email,
@@ -85,7 +85,7 @@ try {
   if ($success) {
     $_SESSION['user_nickname'] = $nickname;
 
-    // Перенаправляем обратно в личный кабинет
+    // Redirect to user account
     header('Location: /pages/account.php#edit');
     exit();
   } else {
@@ -94,7 +94,6 @@ try {
 } catch (PDOException $e) {
   showErrorPage(['Ошибка базы данных: ' . $e->getMessage()]);
 }
-
 
 // Show errors page
 function showErrorPage($errors) {

@@ -2,10 +2,8 @@
 <html lang="ru">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <? require_once "../components/head.php" ?>
   <title>D&D Finder — <?= $title ?></title>
+  <? require_once "../components/head.php" ?>
 </head>
 
 <body class="justify-content-center align-items-center flex-column">

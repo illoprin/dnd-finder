@@ -39,8 +39,6 @@ try {
 <html lang="ru">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>D&D Finder — Профиль пользователя</title>
 
   <? require_once "../components/head.php" ?>
