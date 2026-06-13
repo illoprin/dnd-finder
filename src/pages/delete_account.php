@@ -7,7 +7,7 @@ require_once '../config.php';
 header('Content-Type: text/html; charset=utf-8');
 
 // Проверяем, авторизован ли пользователь
-if (!isLoggedIn()) {
+if (!is_logged_in()) {
   header('Location: /pages/auth.php#login');
   exit;
 }
@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           session_destroy();
 
           // Показываем страницу подтверждения удаления
-          showSuccessPage();
+          show_success_page();
           exit;
         } else {
           $errors[] = "Ошибка при удалении аккаунта";
@@ -60,17 +60,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   // Если есть ошибки, показываем форму с ошибками
   if (!empty($errors)) {
-    showDeleteForm($errors);
+    show_delete_form($errors);
   }
 } else {
   // Показываем форму подтверждения удаления
-  showDeleteForm();
+  show_delete_form();
 }
 
 /**
  * Показывает форму для удаления аккаунта
  */
-function showDeleteForm($errors = [])
+function show_delete_form($errors = [])
 {
 ?>
   <!DOCTYPE html>
@@ -104,7 +104,7 @@ function showDeleteForm($errors = [])
       <div class="card">
         <div class="card-body">
           <div class="warning-icon">⚠️</div>
-          <h1 class="text-danger text-center mb-4">Удаление аккаунта</h1>
+          <h1 class="text-center mb-4">Удаление аккаунта</h1>
 
           <div class="alert alert-warning">
             <strong>Внимание!</strong> Это действие необратимо. Все ваши данные будут безвозвратно удалены.
@@ -163,7 +163,7 @@ function showDeleteForm($errors = [])
 /**
  * Показывает страницу успешного удаления аккаунта
  */
-function showSuccessPage()
+function show_success_page()
 {
 ?>
   <!DOCTYPE html>

@@ -16,7 +16,7 @@ if (empty($id)) {
 }
 
 $id = (int)$id;
-$is_owner = isLoggedIn() && $id == $_SESSION['user_id'];
+$is_owner = is_logged_in() && $id == $_SESSION['user_id'];
 
 $error = "";
 try {
@@ -52,7 +52,7 @@ try {
   <div class="container my-5">
 
     <!-- Error Block -->
-    <? if(!empty($error)): ?>
+    <? if (!empty($error)): ?>
       <div class="alert alert-danger">
         <?= $error ?>
       </div>
@@ -65,21 +65,11 @@ try {
           <?= htmlspecialchars($user['nickname']) ?>
         </h2>
 
-        <p><strong>Telegram:</strong>
-          <a
-            href="https://t.me/<?= $user['telegram_username'] ?>"
-            target="_blank"
-            class="profile-link">
-            <i class="bi bi-telegram"></i>
-            @<?= $user['telegram_username'] ?>
-          </a>
-        </p>
-
         <p><strong>Email:</strong> <?= $user['email'] ?></p>
 
         <p><strong>Описание профиля:</strong>
           <?= $user['description']
-           ? htmlspecialchars($user['description']) : '<small class="fs-5 text-secondary">Без описания</small>' ?>
+            ? htmlspecialchars($user['description']) : 'Без описания' ?>
         </p>
       </div>
     </div>
@@ -92,23 +82,22 @@ try {
 
         <? if (!empty($apps)): ?>
 
-        <? foreach ($apps as $app): ?>
-          <div class="col">
-            <div class="card h-100 app">
-              <img
-                src="<?= $app['image_url'] ?>"
-                class="card-img-top"
-                alt="Заявка"
-                style="height: 200px; object-fit: cover;"
-              >
-              <div class="card-body">
-                <h5 class="card-title"><?= htmlspecialchars($app['title']) ?></h5>
-                <p class="card-text"><?= htmlspecialchars(mb_strimwidth($app['description'], 0, 150, "...")) ?></p>
-                <a href="/pages/app.php?id=<?= $app['id'] ?>" class="btn btn-accent mt-auto">Детальнее</a>
+          <? foreach ($apps as $app): ?>
+            <div class="col">
+              <div class="card h-100 app">
+                <img
+                  src="<?= $app['image_url'] ?>"
+                  class="card-img-top"
+                  alt="Заявка"
+                  style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                  <h5 class="card-title"><?= htmlspecialchars($app['title']) ?></h5>
+                  <p class="card-text"><?= htmlspecialchars(mb_strimwidth($app['description'], 0, 150, "...")) ?></p>
+                  <a href="/pages/app.php?id=<?= $app['id'] ?>" class="btn btn-accent mt-auto">Детальнее</a>
+                </div>
               </div>
             </div>
-          </div>
-        <? endforeach; ?>
+          <? endforeach; ?>
 
         <? else: ?>
           <small class="fs-5 text-secondary">У пользователя нет активных заявок</small>

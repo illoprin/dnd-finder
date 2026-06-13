@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           $_SESSION['user_login'] = $user['login'];
           $_SESSION['user_nickname'] = $user['nickname'];
 
-          // Redirect to accout page
+          // Redirect to account page
           header('Location: /pages/account.php');
           exit;
         } else {
@@ -60,10 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   exit;
 }
 
-function showErrorPage($errors) {
+function showErrorPage($errors)
+{
   $title = "Ошибка входа";
   $link_href = "/pages/auth.php#login";
   $link_title = "Повторить вход";
   require_once "../pages/errors.php";
 }
-?>

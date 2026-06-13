@@ -2,7 +2,7 @@
 session_start();
 require_once "../config.php";
 
-if (!isLoggedIn()) {
+if (!is_logged_in()) {
   header("Location: /pages/auth.php#login");
   exit();
 }

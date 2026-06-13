@@ -4,7 +4,8 @@ $dbname = 'dndfinder';
 $dbuser = 'dndfinder_user';
 $dbpassword = 'dndfinder_password';
 
-function check_file($file, $allowed_types, $max_size) {
+function check_file($file, $allowed_types, $max_size)
+{
   $errors = [];
 
   // Check type
@@ -21,7 +22,8 @@ function check_file($file, $allowed_types, $max_size) {
   return $errors;
 }
 
-function upload_file($file, $dir) {
+function upload_file($file, $dir)
+{
   // Generate unique file name
   $file_extension = pathinfo($file['name'], PATHINFO_EXTENSION);
   $filename = uniqid() . '_' . time() . '.' . $file_extension;
@@ -34,7 +36,8 @@ function upload_file($file, $dir) {
   return false;
 }
 
-function create_or_check_directory($dir) {
+function create_or_check_directory($dir)
+{
   // Try to create directory
   if (!is_dir($dir)) {
     if (!mkdir($dir, 0755, true)) {
@@ -61,15 +64,38 @@ try {
   die('Ошибка подключения: ' . $e->getMessage());
 }
 
-function isLoggedIn() {
+function is_logged_in()
+{
   return isset($_SESSION["user_id"]);
 }
 
-function isApplicationFavorite($id, $user_id) {
+/**
+ * removes responses with status 'declined' that are older than 30 days
+ * @return array(count: int, errors: string[])
+ */
+function clean_old_declined_responses(): array
+{
   global $pdo;
-  $stmt = $pdo->prepare("SELECT 1 FROM liked_apps WHERE user_id = ? AND application_id = ?");
-  $stmt->execute([$user_id, $id]);
-  return $stmt->fetch() !== false;
+  $ret = [
+    'count' => 0,
+    'errors' => array(),
+  ];
+  try {
+    // sql query using internal database interval subtraction to find rows older than 30 days
+    $query = "DELETE FROM responses 
+                WHERE status = 'declined' 
+                  AND created_at < NOW() - INTERVAL 30 DAY";
+
+    $stmt = $pdo->prepare($query);
+    $stmt->execute();
+
+    // total number of affected rows
+    $ret['count'] = $stmt->rowCount();
+  } catch (PDOException $e) {
+    // error tracking for maintenance logs
+    $ret['errors'][] = ("failed to clean database responses: " . $e->getMessage());
+  }
+  return $ret;
 }
 
 $app_types = [

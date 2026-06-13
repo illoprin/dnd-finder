@@ -3,7 +3,7 @@ session_start();
 require_once "../config.php";
 
 // Check auth
-if (!isLoggedIn()) {
+if (!is_logged_in()) {
   header('Location: /pages/login.php');
   exit();
 }
@@ -96,7 +96,8 @@ try {
 }
 
 // Show errors page
-function showErrorPage($errors) {
+function showErrorPage($errors)
+{
   $title = "Ошибка редактирования профиля";
   $link_href = "/pages/account.php";
   $link_title  = "В личный кабинет";

@@ -2,7 +2,7 @@
 session_start();
 require_once "../config.php";
 
-if (!isLoggedIn()) {
+if (!is_logged_in()) {
   header("Location: /pages/auth.php#login");
   exit();
 }
@@ -170,9 +170,9 @@ $error ? array_push($errors, $error) : "";
 
     <div class="mb-4">
       <a
-        href="/pages/app.php?id=<?= $id ?>"
+        href="/pages/account.php#apps"
         class="btn btn-outline-light">
-        На страницу заявки
+        <i class="bi bi-arrow-left"></i> В личный кабинет
       </a>
     </div>
 
@@ -218,8 +218,7 @@ $error ? array_push($errors, $error) : "";
             class="form-control"
             id="image"
             accept="image/*"
-            name="image"
-          >
+            name="image">
           <img
             id="preview"
             src="<?= $app['image_url'] ?>"

@@ -1,16 +1,16 @@
 // Edit form validation
 const editForm = document.forms.edit;
 const editFormAlert = document.querySelector("#editFormAlert");
-editForm.nickname.addEventListener("input", function() {
+editForm.nickname.addEventListener("input", function () {
   InputValidation.validateField(this, 5);
 });
-editForm.email.addEventListener("input", function() {
+editForm.email.addEventListener("input", function () {
   InputValidation.validateField(this, 5, true);
 });
-editForm.telegram_username.addEventListener("input", function() {
+editForm.telegram_username.addEventListener("input", function () {
   InputValidation.validateField(this, 1);
 });
-editForm.description.addEventListener("input", function() {
+editForm.description.addEventListener("input", function () {
   InputValidation.validateField(this, 10);
 });
 editForm.addEventListener("change", () => {
@@ -20,13 +20,13 @@ editForm.addEventListener("change", () => {
 // Security form validation
 const securityForm = document.forms.security;
 const securityFormAlert = document.querySelector("#securityFormAlert");
-securityForm.login.addEventListener("input", function()  {
+securityForm.login.addEventListener("input", function () {
   InputValidation.validateField(this, 5);
 });
-securityForm.new_password.addEventListener("input", function()  {
+securityForm.new_password.addEventListener("input", function () {
   InputValidation.validateField(this, 8);
 });
-securityForm.current_password.addEventListener("input", function()  {
+securityForm.current_password.addEventListener("input", function () {
   InputValidation.validateField(this, 8);
 });
 securityForm.addEventListener("change", () => {
@@ -37,7 +37,7 @@ securityForm.addEventListener("change", () => {
 // Tabs handler
 tabOptions = {
   titleBase: "D&D Finder",
-  defaultTab: "edit",
+  defaultTab: "apps",
   tabs: {
     edit: {
       target: "edit",
@@ -55,13 +55,19 @@ tabOptions = {
       target: "apps",
       tab: "apps-tab",
       hash: "apps",
-      title: "Личный кабинет - Заявки",
+      title: "Личный кабинет - Мои заявки",
     },
-    favorites: {
-      target: "favorites",
-      tab: "favorites-tab",
-      hash: "favorites",
-      title: "Личный кабинет - Редактировать профиль",
+    responses: {
+      target: "responses",
+      tab: "responses-tab",
+      hash: "responses",
+      title: "Личный кабинет - Отклики к моим заявкам",
+    },
+    matches: {
+      target: "matches",
+      tab: "matches-tab",
+      hash: "matches",
+      title: "Личный кабинет - Мои матчи",
     },
   },
 };

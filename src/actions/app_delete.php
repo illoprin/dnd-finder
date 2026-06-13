@@ -3,7 +3,7 @@ session_start();
 require_once "../config.php";
 
 // Check logged in
-if (!isLoggedIn()) {
+if (!is_logged_in()) {
   header("Location: /pages/auth.php#login");
   exit();
 }
@@ -28,7 +28,7 @@ try {
     header("Location: /");
     exit;
   }
-  
+
   // Delete image
   if (file_exists(".." . $app_entry['image_url'])) {
     unlink(".." . $app_entry['image_url']);
@@ -43,7 +43,8 @@ try {
 
 redirect();
 
-function redirect() {
+function redirect()
+{
   header("Location: /pages/account.php#apps");
   exit();
 }

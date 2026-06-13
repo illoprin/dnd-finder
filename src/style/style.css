@@ -10,7 +10,8 @@ body {
 }
 
 .navbar,
-footer {
+footer,
+.dropdown-menu {
   background-color: #453227;
 }
 
@@ -36,7 +37,6 @@ footer {
 .btn-accent-outline:hover {
   background-color: #906b3e;
   color: #fff;
-
 }
 
 .section-title {
@@ -62,7 +62,8 @@ footer {
   transform: translateY(-5px);
 }
 
-.card-text {
+.card-text,
+.modal-title {
   color: #ebe3b5;
 }
 
@@ -98,17 +99,18 @@ section {
   color: #ebe3b5;
 }
 
-.form-control:focus,.form-select:focus {
+.form-control:focus,
+.form-select:focus {
   background-color: #2d2321;
   border-color: #d9972b;
   color: #fff;
   box-shadow: none;
 }
 
-.form-text {
+.form-text,
+.form-label {
   color: #ebe3b5;
 }
-
 
 .img-preview {
   max-width: 100%;
@@ -158,7 +160,8 @@ section {
   border-radius: 8px;
 }
 
-.nav-tabs .nav-link {
+.nav-tabs .nav-link,
+.text-primary {
   color: #ebe3b5;
 }
 
@@ -166,6 +169,17 @@ section {
   background-color: #453227;
   border-color: #d9972b;
   color: #d9972b;
+}
+
+.modal-content {
+  background-color: #453227;
+}
+
+.modal-header,
+.modal-footer,
+.dropdown-header,
+.border-light {
+  border-color: #906b3e;
 }
 
 .profile-link {

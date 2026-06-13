@@ -25,7 +25,6 @@ try {
   WHERE a.id = ?"
   );
   $stmt->execute([$app_id]);
-  $is_favorite = isLoggedIn() ? isApplicationFavorite($app_id, $_SESSION['user_id']) : false;
 } catch (PDOException $e) {
   $error = "Ошибка базы данных " . $e->getMessage();
 }
@@ -55,7 +54,9 @@ $app_entry = $stmt->fetch();
       </div>
     <? endif; ?>
 
-    <a href="search.php" class="btn btn-outline-light mb-4">&larr; К заявкам</a>
+    <button id="go-back" class="btn btn-outline-light mb-4">
+      &larr; Назад
+    </button>
 
     <div class="row g-4">
 
@@ -69,30 +70,7 @@ $app_entry = $stmt->fetch();
         <div class="d-flex justify-content-between mb-3">
           <h2><?= $app_entry['title'] ?></h2>
 
-          <? if (isLoggedIn()) : ?>
-            <!-- Favorites button -->
-            <? if ($_SESSION['user_id'] != $app_entry['user_id']): ?>
-              <div>
-
-                <? if (!$is_favorite): ?>
-                  <a
-                    class="btn btn-outline-light"
-                    href="/actions/favorite_handler.php?id=<?= $app_id ?>&is_favorite=0&redirect=<?= $_SERVER['REQUEST_URI'] ?>"
-                    title="Добавить в избранное">
-                    <i class="bi bi-bookmark-plus"></i>
-                  </a>
-                <? else: ?>
-                  <a
-                    class="btn btn-outline-light"
-                    href="/actions/favorite_handler.php?id=<?= $app_id ?>&is_favorite=1&redirect=<?= $_SERVER['REQUEST_URI'] ?>"
-                    title="Удалить из избранного">
-                    <i class="bi bi-bookmark-plus-fill"></i>
-                  </a>
-                <? endif; ?>
-
-              </div>
-
-            <? endif; ?>
+          <? if (is_logged_in()) : ?>
 
             <!-- Edit button -->
             <? if ($_SESSION['user_id'] == $app_entry['user_id']): ?>
@@ -120,19 +98,18 @@ $app_entry = $stmt->fetch();
         <p class="mb-3">
           <?= $app_entry['description'] ?>
         </p>
-
-        <div class="accent-block mt-3">
-          <a href="https://t.me/<?= $app_entry['telegram_username'] ?>" class="profile-link">
-            <i class="bi bi-telegram"></i>
-            <?= $app_entry['telegram_username'] ?>
-          </a>
-        </div>
       </div>
     </div>
 
   </div>
 
   <? require_once "../components/footer.php" ?>
+
+  <script>
+    document.getElementById("go-back").addEventListener("click", () => {
+      history.back();
+    });
+  </script>
 
 </body>
 

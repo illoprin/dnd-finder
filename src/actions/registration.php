@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user_id = $pdo->lastInsertId();
 
         // Show success page
-        showSuccessPage($login);
+        show_success_page($login);
         exit;
       }
     } catch (PDOException $e) {
@@ -91,30 +91,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   exit;
 }
 
-function showSuccessPage($login)
+function show_success_page($login)
 {
-  ?>
-    <!DOCTYPE html>
-    <html lang="ru">
+?>
+  <!DOCTYPE html>
+  <html lang="ru">
 
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <? require_once "../components/head.php" ?>
-      <title>D&D Finder — Успешный вход</title>
-    </head>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <? require_once "../components/head.php" ?>
+    <title>D&D Finder — Успешный вход</title>
+  </head>
 
-    <body class="justify-content-center align-items-center flex-column">
-      <div class="container text-center">
-        <p class="fw-bold fs-1 mb-3">
-          Регистрация успешна, <? echo $login ?>👍
-        </p>
-        <a href="/pages/auth.php#login" class="btn btn-accent">Перейти на страницу входа</a>
-      </div>
-    </body>
+  <body class="justify-content-center align-items-center flex-column">
+    <div class="container text-center">
+      <p class="fw-bold fs-1 mb-3">
+        Регистрация успешна, <? echo $login ?>👍
+      </p>
+      <a href="/pages/auth.php#login" class="btn btn-accent">Перейти на страницу входа</a>
+    </div>
+  </body>
 
-    </html>
-  <?
+  </html>
+<?
 }
 
 function showErrorPage($errors)
