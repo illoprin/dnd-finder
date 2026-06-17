@@ -70,29 +70,3 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
-  nginx-prod:
-    image: nginx:alpine
-    container_name: dndfinder_nginx_local
-    profiles: ["prod"]
-    ports:
-      - "443:443"
-    volumes:
-      - ./src:/var/www/html
-      - ./nginx/nginx.prod.conf:/etc/nginx/conf.d/default.conf
-      - /etc/letsencrypt:/etc/letsencrypt
-    depends_on:
-      - php
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost/ || exit 0",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3

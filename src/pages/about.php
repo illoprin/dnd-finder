@@ -7,7 +7,7 @@ session_start();
 <html lang="ru">
 
 <head>
-  <title>D&D Finder — Поиск заявок</title>
+  <title>D&D Finder — О нас</title>
   <? require_once "../components/head.php" ?>
 </head>
 

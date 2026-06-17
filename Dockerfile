@@ -24,9 +24,6 @@ RUN docker-php-ext-install \
     bcmath \
     gd
 
-# Install composer (just in case)
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 # Create workdir
 WORKDIR /var/www/html
 

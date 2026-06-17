@@ -1,8 +1,8 @@
 <?
-$dbhost = 'mysql';
-$dbname = 'dndfinder';
-$dbuser = 'dndfinder_user';
-$dbpassword = 'dndfinder_password';
+
+// ------------------------------------------------------------
+//             Functions
+// ------------------------------------------------------------
 
 function check_file($file, $allowed_types, $max_size)
 {
@@ -49,20 +49,6 @@ function create_or_check_directory($dir)
   return is_writable($dir);
 }
 
-try {
-  $options = [
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-  ];
-  $pdo = new PDO(
-    "mysql:host=$dbhost;dbname=$dbname",
-    $dbuser,
-    $dbpassword,
-    $options
-  );
-} catch (PDOException $e) {
-  die('Ошибка подключения: ' . $e->getMessage());
-}
 
 function is_logged_in()
 {
@@ -98,7 +84,83 @@ function clean_old_declined_responses(): array
   return $ret;
 }
 
+// ------------------------------------------------------------
+//             Initial
+// ------------------------------------------------------------
+
+// constats
+
+$dbhost = 'mysql';
+$dbname = 'dndfinder';
+$dbuser = 'dndfinder_user';
+$dbpassword = 'dndfinder_password';
+
 $app_types = [
   'master' => '👑 Мастер ищет игроков',
   'player' => '🎭 Игрок ищет мастера',
 ];
+
+// connect to sql
+
+try {
+  $options = [
+    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+  ];
+  $pdo = new PDO(
+    "mysql:host=$dbhost;dbname=$dbname",
+    $dbuser,
+    $dbpassword,
+    $options
+  );
+} catch (PDOException $e) {
+  die('Ошибка подключения: ' . $e->getMessage());
+}
+
+// create tables
+
+try {
+
+  // users
+  $pdo->exec("
+    create table if not exists users (
+      id int(4) primary key auto_increment,
+      login varchar(255) not null unique,
+      nickname varchar(64) not null,
+      email varchar(255) not null unique,
+      password_hash varchar(255) not null,
+      description text,
+      telegram_username varchar(255),
+      created_at timestamp default current_timestamp
+    )
+  ");
+
+  // applications
+  $pdo->exec("
+    create table if not exists applications (
+      id int primary key auto_increment,
+      user_id int not null,
+      type enum('player', 'master') not null,
+      title varchar(255) not null,
+      description text not null,
+      image_url varchar(255),
+      crated_at timestamp default current_timestamp,
+      foreign key (user_id) references users(id) on delete cascade
+    )
+  ");
+
+  // responses
+  $pdo->exec("
+    create table responses (
+      id int auto_increment primary key,
+      ticket_id int not null,
+      user_id int not null,
+      status enum('pending', 'accepted', 'declined') default 'pending',
+      message text,
+      created_at timestamp default current_timestamp
+    )
+  ");
+
+} catch (PDOException $e) {
+  die("Ошибка создания таблиц " . $e->getMessage());
+}
