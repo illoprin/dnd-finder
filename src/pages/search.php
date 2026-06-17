@@ -14,10 +14,10 @@ $total_pages = ceil($total_apps / $per_page);
 
 // Получаем заявки для текущей страницы
 $stmt = $pdo->prepare("
-    SELECT *
-    FROM applications
-    ORDER BY crated_at DESC 
-    LIMIT :limit OFFSET :offset
+  SELECT *
+  FROM applications
+  ORDER BY crated_at DESC 
+  LIMIT :limit OFFSET :offset
 ");
 $stmt->bindValue(':limit', $per_page, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -64,7 +64,7 @@ $applications = $stmt->fetchAll();
     <div class="row g-4">
       <? if (empty($applications)): ?>
         <div class="col-12 text-center">
-          <p class="text-muted">Заявок пока нет</p>
+          <p class="text-secondary">Заявок пока нет</p>
         </div>
       <? else: ?>
         <? foreach ($applications as $app): ?>

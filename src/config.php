@@ -153,7 +153,7 @@ try {
   $pdo->exec("
     create table responses (
       id int auto_increment primary key,
-      ticket_id int not null,
+      app_id int not null,
       user_id int not null,
       status enum('pending', 'accepted', 'declined') default 'pending',
       message text,
